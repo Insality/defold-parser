@@ -1,7 +1,5 @@
 const fs = require('fs')
 
-const regex_component = /^([a-z0-9_]+) \{$/i // ends with {
-const regex_property_value = /^([a-z_]+):\s*(.*)$/i // name: "value"
 const regex_property_string_value = /^(".*")$/ // "value"
 const regex_value_is_string = /^".*"$/
 const regex_value_is_number = /^-?[0-9.]+$/
@@ -10,7 +8,7 @@ const defold_regex = /(?:data:)|(?:^|\s)(\w+):\s+(.+(?:\s+".*)*)|(\w*)\W{|(})/
 
 
 
-function unescape_data(value) {
+function unescape_data(value, element_name) {
 	value = value.split("\n").map(x => x.trim().slice(1, -1)).join("\n")
 	value = value.replace(/\\"/g, '"')
 	value = value.replace(/\\n/g, "")
@@ -22,9 +20,12 @@ function unescape_data(value) {
 	for (let i in value) {
 		let line = value[i].trim()
 		if (line.startsWith("data:")) {
-			is_data = true
-			value[i] = value[i] + '"'
-		} else if (line == '"') {
+			let is_object_data = line.slice(5).indexOf(":") >= 0
+			if (is_object_data) {
+				is_data = true
+				value[i] = value[i] + '"'
+			}
+		} else if (line == '"' && is_data) {
 			is_data = false
 			value[i] = value[i] + '"'
 		} else {
@@ -57,6 +58,7 @@ function decode_value(value, property_name) {
 function decode_defold_object(text) {
 	let defold_object = {}
 	let object_stack = [ defold_object ]
+	let element_name_stack = [ "root" ]
 
 	let last_match_index = false
 
@@ -76,11 +78,14 @@ function decode_defold_object(text) {
 			last_object[element_name].push(new_object)
 
 			object_stack.push(new_object)
+			element_name_stack.push(element_name)
 		} else if (name && value) {
+			let element_name = element_name_stack[element_name_stack.length - 1]
 			value = decode_value(value, name)
 
-			if (name == "data") {
-				value = unescape_data(value);
+			// console.log("DECODE", value)
+			if (name == "data" && element_name !== "embedded_collision_shape") {
+				value = unescape_data(value, element_name);
 				value = decode_defold_object(value)
 			}
 
@@ -88,6 +93,7 @@ function decode_defold_object(text) {
 			last_object[name] = last_object[name] || []
 			last_object[name].push(value)
 		} else if (element_exit) {
+			element_name_stack.pop()
 			object_stack.pop()
 		}
 
@@ -99,11 +105,11 @@ function decode_defold_object(text) {
 }
 
 
-const withDotParams = ["x", "y", "z", "w",
-"alpha", "outline_alpha", "shadow_alpha",
-"text_leading", "text_tracking", "pieFillAngle", "innerRadius", "leading", "tracking",
+const withDotParams = ["x", "y", "z", "w", "alpha", "outline_alpha", "shadow_alpha",
+"text_leading", "text_tracking", "pieFillAngle", "innerRadius", "leading", "tracking", "data",
 "t_x", "t_y", "spread", "start_delay", "inherit_velocity", "start_delay_spread", "duration_spread",
-"start_offset", "outline_width", "shadow_x", "shadow_y"]
+"start_offset", "outline_width", "shadow_x", "shadow_y", "aspect_ratio", "far_z", "mass", "linear_damping", "angular_damping",
+"gain" , "pan", "speed"]
 const notConstants = ["text", "id"]
 
 function encode_defold_object(obj, spaces, data_level) {
@@ -120,8 +126,8 @@ function encode_defold_object(obj, spaces, data_level) {
 		let arr = obj[key]
 		for (let j = 0; j < arr.length; j++) {
 			let value = arr[j]
-			if (key == 'data') {
-				console.log("NEED TO ENCODE:", value, data_level)
+			let value_type = typeof(value)
+			if (key == 'data' && value_type == "object") {
 				let encodedChild = encode_defold_object(value, null, data_level + 1)
 
 				if (data_level == 0) {
@@ -133,16 +139,13 @@ function encode_defold_object(obj, spaces, data_level) {
 					encodedChild = encodedChild.replace(/\n/g, '\\\n')
 				}
 
-
-				console.log("Encoded", encodedChild)
-
 				result += tabString + key + ': "' + encodedChild + '"\n'
 			} else if (key == "children") {
 				if (!value.match(regex_property_string_value)) {
 					value = '"' + arr[j] + '"'
 				}
 				result += tabString + key + ": " + value + "\n"
-			} else if (typeof arr[j] == "number") {
+			} else if (value_type == "number") {
 				let withDot = (withDotParams.indexOf(key) >= 0)
 				if (String(value).indexOf('.') >= 0) {
 					withDot = false
@@ -151,7 +154,7 @@ function encode_defold_object(obj, spaces, data_level) {
 					value = value.toFixed(1)
 				}
 				result += tabString + key + ': ' + value + '\n'
-			} else if (typeof arr[j] == "string") {
+			} else if (value_type == "string") {
 				if (value.match(/^[A-Z_\d]+$/) && notConstants.indexOf(key) < 0) {
 					// ЭТО_КОНСТАНТА - обрамлять кавычками не требуется
 					result += tabString + key + ': ' + value + '\n'

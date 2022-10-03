@@ -94,20 +94,57 @@ test('Defold Encode Collection', function (t) {
 	let parsed_collection = defold_parser.decode_object(content)
 	let encoded = defold_parser.encode_object(parsed_collection)
 
-	defold_parser.save_to_file("./test.collection", parsed_collection)
+	t.assert(content == encoded)
+	t.end();
+});
+
+
+test('Defold Encode ParticleFX', function (t) {
+	let file_path = "./tests/files/particlefx.particlefx"
+	let content = fs.readFileSync(file_path, 'utf8')
+
+	let parsed_particlefx = defold_parser.decode_object(content)
+	let encoded = defold_parser.encode_object(parsed_particlefx)
 
 	t.assert(content == encoded)
 	t.end();
 });
 
 
-// test('Defold Encode ParticleFX', function (t) {
-// 	let file_path = "./tests/files/particlefx.particlefx"
-// 	let content = fs.readFileSync(file_path, 'utf8')
+test('Defold Parsing Collision Game Object', function (t) {
+	let parsed_go = defold_parser.load_from_file("./tests/files/collision_go.go")
 
-// 	let parsed_particlefx = defold_parser.decode_object(content)
-// 	let encoded = defold_parser.encode_object(parsed_particlefx)
 
-// 	t.assert(content == encoded)
-// 	t.end();
-// });
+	let shape = parsed_go.embedded_components[0].data[0].embedded_collision_shape[0]
+	t.assert(shape.shapes[0].shape_type[0] == "TYPE_BOX")
+	t.assert(shape.data.length == 4)
+	t.assert(shape.data[0] == 10.0)
+
+	t.end();
+});
+
+
+test('Defold Encode Collision Game Object', function (t) {
+	let file_path = "./tests/files/collision_go.go"
+	let content = fs.readFileSync(file_path, 'utf8')
+
+	let parsed_collision_go = defold_parser.decode_object(content)
+	let encoded = defold_parser.encode_object(parsed_collision_go)
+
+	t.assert(content == encoded)
+	t.end();
+});
+
+
+test('Defold Encode Full Game Object', function (t) {
+	let file_path = "./tests/files/full_go.go"
+	let content = fs.readFileSync(file_path, 'utf8')
+
+	let parsed_full_go = defold_parser.decode_object(content)
+	let encoded = defold_parser.encode_object(parsed_full_go)
+
+	defold_parser.save_to_file("./test.go", parsed_full_go)
+
+	t.assert(content == encoded)
+	t.end();
+});
