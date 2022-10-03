@@ -143,7 +143,31 @@ test('Defold Encode Full Game Object', function (t) {
 	let parsed_full_go = defold_parser.decode_object(content)
 	let encoded = defold_parser.encode_object(parsed_full_go)
 
-	defold_parser.save_to_file("./test.go", parsed_full_go)
+	t.assert(content == encoded)
+	t.end();
+});
+
+
+test('Defold Encode Collection With several embedded component', function (t) {
+	let file_path = "./tests/files/collection_several_embedded.collection"
+	let content = fs.readFileSync(file_path, 'utf8')
+
+	let parsed_collection = defold_parser.decode_object(content)
+	let encoded = defold_parser.encode_object(parsed_collection)
+
+	t.assert(content == encoded)
+	t.end();
+});
+
+
+test('Defold Encode GUI', function (t) {
+	let file_path = "./tests/files/gui.gui"
+	let content = fs.readFileSync(file_path, 'utf8')
+
+	let parsed_gui = defold_parser.decode_object(content)
+	let encoded = defold_parser.encode_object(parsed_gui)
+
+	// defold_parser.save_to_file("./test.gui", parsed_gui)
 
 	t.assert(content == encoded)
 	t.end();

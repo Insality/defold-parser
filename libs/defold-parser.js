@@ -2,7 +2,7 @@ const fs = require('fs')
 
 const regex_property_string_value = /^(".*")$/ // "value"
 const regex_value_is_string = /^".*"$/
-const regex_value_is_number = /^-?[0-9.]+$/
+const regex_value_is_number = /^-?[0-9.E-]+$/
 
 const defold_regex = /(?:data:)|(?:^|\s)(\w+):\s+(.+(?:\s+".*)*)|(\w*)\W{|(})/
 
@@ -19,13 +19,13 @@ function unescape_data(value, element_name) {
 	let is_data = false
 	for (let i in value) {
 		let line = value[i].trim()
-		if (line.startsWith("data:")) {
+		if (line.startsWith("data:") && !is_data) {
 			let is_object_data = line.slice(5).indexOf(":") >= 0
 			if (is_object_data) {
 				is_data = true
 				value[i] = value[i] + '"'
 			}
-		} else if (line == '"' && is_data) {
+		} else if ((line == '"' || line == '""') && is_data) {
 			is_data = false
 			value[i] = value[i] + '"'
 		} else {
@@ -37,6 +37,12 @@ function unescape_data(value, element_name) {
 	value = value.join("\n")
 
 	return value
+}
+
+
+function is_multiline_value(value) {
+	let text_array = value.split("\n")
+	return (text_array[0] && text_array[0].endsWith("\\n\""))
 }
 
 
@@ -83,7 +89,11 @@ function decode_defold_object(text) {
 			let element_name = element_name_stack[element_name_stack.length - 1]
 			value = decode_value(value, name)
 
-			// console.log("DECODE", value)
+			// Decode multiline text here to
+			// TODO: move multiline parsing to general flow
+			if (name == "text" && is_multiline_value(value)) {
+				value = unescape_data(value, element_name);
+			}
 			if (name == "data" && element_name !== "embedded_collision_shape") {
 				value = unescape_data(value, element_name);
 				value = decode_defold_object(value)
@@ -108,8 +118,8 @@ function decode_defold_object(text) {
 const withDotParams = ["x", "y", "z", "w", "alpha", "outline_alpha", "shadow_alpha",
 "text_leading", "text_tracking", "pieFillAngle", "innerRadius", "leading", "tracking", "data",
 "t_x", "t_y", "spread", "start_delay", "inherit_velocity", "start_delay_spread", "duration_spread",
-"start_offset", "outline_width", "shadow_x", "shadow_y", "aspect_ratio", "far_z", "mass", "linear_damping", "angular_damping",
-"gain" , "pan", "speed"]
+"start_offset", "outline_width", "shadow_x", "shadow_y", "aspect_ratio", "far_z", "mass",
+"linear_damping", "angular_damping", "gain" , "pan", "speed", "duration"]
 const notConstants = ["text", "id"]
 
 function encode_defold_object(obj, spaces, data_level) {
@@ -153,16 +163,16 @@ function encode_defold_object(obj, spaces, data_level) {
 				if (withDot) {
 					value = value.toFixed(1)
 				}
+				value = ("" + value).replace(/e/g, "E")
 				result += tabString + key + ': ' + value + '\n'
 			} else if (value_type == "string") {
 				if (value.match(/^[A-Z_\d]+$/) && notConstants.indexOf(key) < 0) {
-					// ЭТО_КОНСТАНТА - обрамлять кавычками не требуется
+					// Defold Constant
 					result += tabString + key + ': ' + value + '\n'
 				} else if (value === "false" || value === "true") {
 					result += tabString + key + ': ' + value + '\n'
 				} else {
-					// другие строки обрамляем двойными кавычками
-					// случай с многострочным text
+					// Multiline text
 					let text_array = value.split("\n")
 					for (let i = 0; i < text_array.length; i++) {
 						let v = text_array[i]
