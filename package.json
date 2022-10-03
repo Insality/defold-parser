@@ -1,6 +1,6 @@
 {
   "name": "defold-parser",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Parse defold objects to JS object and back to Defold object",
   "main": "defold-parser.js",
   "watch": {
@@ -10,6 +10,9 @@
     "test": "tape tests/**/*.js",
     "watch": "npm-watch"
   },
+  "files": [
+	"defold-parser.js"
+  ],
   "author": "Insality",
   "license": "MIT",
   "devDependencies": {
