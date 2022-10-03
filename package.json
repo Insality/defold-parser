@@ -1,10 +1,10 @@
 {
   "name": "defold-parser",
-  "version": "1.0.0",
-  "description": "Parse defold objects to JS object and back",
-  "main": "index.js",
+  "version": "0.1.0",
+  "description": "Parse defold objects to JS object and back to Defold object",
+  "main": "defold-parser.js",
   "watch": {
-    "test": "{libs,tests}/*.js"
+    "test": "{tests}/*.js"
   },
   "scripts": {
     "test": "tape tests/**/*.js",
