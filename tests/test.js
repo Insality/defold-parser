@@ -8,8 +8,8 @@ test('Defold Parsing Game Object', function (t) {
 
 	t.assert(parsed_go.embedded_components);
 	t.assert(parsed_go.embedded_components[0].id == "pirates_ship_1");
-	t.assert(parsed_go.embedded_components[0].position[0].x == 0)
-	t.assert(parsed_go.embedded_components[0].rotation[0].w == 1)
+	t.assert(parsed_go.embedded_components[0].position[0].x[0] == 0)
+	t.assert(parsed_go.embedded_components[0].rotation[0].w[0] == 1)
 	t.assert(parsed_go.embedded_components[0].data[0].load_dynamically[0] == "true")
 
 	t.end();
@@ -20,7 +20,7 @@ test('Defold Parsing Collection', function (t) {
 	let parsed_collection = defold_parser.load_from_file("./tests/files/collection.collection")
 	let instance = parsed_collection.embedded_instances[1]
 
-	t.assert(instance.id == "tile")
+	t.assert(instance.id[0] == "tile")
 	let inner_component = instance.data[0].embedded_components[0]
 	t.assert(inner_component.id[0] = "sprite")
 	t.assert(inner_component.type[0] = "sprite")
@@ -34,8 +34,8 @@ test('Defold Parsing Collection', function (t) {
 test('Defold Parsing Font', function (t) {
 	let parsed_font = defold_parser.load_from_file("./tests/files/font.font");
 
-	t.assert(parsed_font.size == 40);
-	t.assert(parsed_font.output_format == "TYPE_DISTANCE_FIELD");
+	t.assert(parsed_font.size[0] == 40);
+	t.assert(parsed_font.output_format[0] == "TYPE_DISTANCE_FIELD");
 
 	t.end();
 });
