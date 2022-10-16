@@ -1,6 +1,6 @@
 const test = require("tape");
 const fs = require("fs");
-const defold_parser = require("../libs/defold-parser")
+const defold_parser = require("../defold-parser")
 
 
 test('Defold Parsing Game Object', function (t) {
