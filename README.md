@@ -1,5 +1,6 @@
 ![](logo_defold_parser.png)
 [![Github-sponsors](https://img.shields.io/badge/sponsor-30363D?style=for-the-badge&logo=GitHub-Sponsors&logoColor=#EA4AAA)](https://github.com/sponsors/insality) [![Ko-Fi](https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/insality) [![BuyMeACoffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://www.buymeacoffee.com/insality)
+
 [![CI/CD](https://github.com/Insality/defold-parser/actions/workflows/node.js.yml/badge.svg)](https://github.com/Insality/defold-parser/actions/workflows/node.js.yml)
 [![npm](https://img.shields.io/npm/v/defold-parser?label=defold-parser)](https://www.npmjs.com/package/defold-parser)
 
@@ -7,7 +8,7 @@
 
 
 ## Install
-To install **defold-parser** use [`npm`](https://docs.npmjs.com/).
+To install **[defold-parser](https://www.npmjs.com/package/defold-parser)** use [`npm`](https://docs.npmjs.com/).
 ```bash
 npm install --save defold-parser
 ```
@@ -41,12 +42,12 @@ let defold_text_string = defold_parser.encode_object([js_object])
 Every Defold parsed struct is array, even for single fields. To access any field you should access it on first array index. For example:
 
 ```js
-	let parsed_collection = defold_parser.load_from_file("./tests/files/collection.collection")
-	let instance = parsed_collection.embedded_instances[0]
+let parsed_collection = defold_parser.load_from_file("./tests/files/collection.collection")
+let instance = parsed_collection.embedded_instances[0]
 
-	assert(instance.id[0] == "tile")
-	assert(inner_component.id[0] = "sprite")
-	assert(inner_component.type[0] = "sprite")
+assert(instance.id[0] == "tile")
+assert(inner_component.id[0] = "sprite")
+assert(inner_component.type[0] = "sprite")
 ```
 
 To know, which fields you wanna edit, see the file struct you parsing or just use `console.log` in development :smile:
