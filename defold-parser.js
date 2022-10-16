@@ -120,7 +120,7 @@ const withDotParams = ["x", "y", "z", "w", "alpha", "outline_alpha", "shadow_alp
 "t_x", "t_y", "spread", "start_delay", "inherit_velocity", "start_delay_spread", "duration_spread",
 "start_offset", "outline_width", "shadow_x", "shadow_y", "aspect_ratio", "far_z", "mass",
 "linear_damping", "angular_damping", "gain" , "pan", "speed", "duration"]
-const notConstants = ["text", "id"]
+const notConstants = ["text", "id", "value"]
 
 function encode_defold_object(obj, spaces, data_level) {
 	let result = ''
