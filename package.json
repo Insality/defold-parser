@@ -1,20 +1,23 @@
 {
   "name": "defold-parser",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Parse defold objects to JS object and back to Defold object",
   "main": "defold-parser.js",
   "watch": {
     "test": "{tests}/*.js"
   },
   "repository": {
-	"type": "git",
-	"url": "https://github.com/insality/defold-parser"
+    "type": "git",
+    "url": "https://github.com/insality/defold-parser"
   },
   "scripts": {
     "test": "tape tests/**/*.js",
     "watch": "npm-watch"
   },
-  "keywords": ["defold", "parser"],
+  "keywords": [
+    "defold",
+    "parser"
+  ],
   "files": [
     "defold-parser.js"
   ],
