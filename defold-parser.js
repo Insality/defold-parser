@@ -20,7 +20,7 @@ function unescape_data(value, element_name) {
 	for (let i in value) {
 		let line = value[i].trim()
 		if (line.startsWith("data:") && !is_data) {
-			let is_object_data = line.slice(5).indexOf(":") >= 0
+			let is_object_data = (line.slice(5).indexOf(":") >= 0 || line.slice(5).indexOf("{") >= 0)
 			if (is_object_data) {
 				is_data = true
 				value[i] = value[i] + '"'

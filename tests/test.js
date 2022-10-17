@@ -172,3 +172,15 @@ test('Defold Encode GUI', function (t) {
 	t.assert(content == encoded)
 	t.end();
 });
+
+
+test('Defold Encode Collection with several labels', function (t) {
+	let file_path = "./tests/files/collection_with_label.collection"
+	let content = fs.readFileSync(file_path, 'utf8')
+
+	let parsed_collection = defold_parser.decode_object(content)
+	let encoded = defold_parser.encode_object(parsed_collection)
+
+	t.assert(content == encoded)
+	t.end();
+});
