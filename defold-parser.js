@@ -7,7 +7,6 @@ const regex_value_is_number = /^-?[0-9.E-]+$/
 const defold_regex = /(?:data:)|(?:^|\s)(\w+):\s+(.+(?:\s+".*)*)|(\w*)\W{|(})/
 
 
-
 function unescape_data(value, element_name) {
 	value = value.split("\n").map(x => x.trim().slice(1, -1)).join("\n")
 	value = value.replace(/\\"/g, '"')

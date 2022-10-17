@@ -114,7 +114,6 @@ test('Defold Encode ParticleFX', function (t) {
 test('Defold Parsing Collision Game Object', function (t) {
 	let parsed_go = defold_parser.load_from_file("./tests/files/collision_go.go")
 
-
 	let shape = parsed_go.embedded_components[0].data[0].embedded_collision_shape[0]
 	t.assert(shape.shapes[0].shape_type[0] == "TYPE_BOX")
 	t.assert(shape.data.length == 4)
